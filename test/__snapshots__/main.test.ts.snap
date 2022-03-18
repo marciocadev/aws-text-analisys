@@ -1,0 +1,695 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Snapshot 1`] = `
+Object {
+  "Mappings": Object {
+    "ServiceprincipalMap": Object {
+      "af-south-1": Object {
+        "states": "states.af-south-1.amazonaws.com",
+      },
+      "ap-east-1": Object {
+        "states": "states.ap-east-1.amazonaws.com",
+      },
+      "ap-northeast-1": Object {
+        "states": "states.ap-northeast-1.amazonaws.com",
+      },
+      "ap-northeast-2": Object {
+        "states": "states.ap-northeast-2.amazonaws.com",
+      },
+      "ap-northeast-3": Object {
+        "states": "states.ap-northeast-3.amazonaws.com",
+      },
+      "ap-south-1": Object {
+        "states": "states.ap-south-1.amazonaws.com",
+      },
+      "ap-southeast-1": Object {
+        "states": "states.ap-southeast-1.amazonaws.com",
+      },
+      "ap-southeast-2": Object {
+        "states": "states.ap-southeast-2.amazonaws.com",
+      },
+      "ap-southeast-3": Object {
+        "states": "states.ap-southeast-3.amazonaws.com",
+      },
+      "ca-central-1": Object {
+        "states": "states.ca-central-1.amazonaws.com",
+      },
+      "cn-north-1": Object {
+        "states": "states.cn-north-1.amazonaws.com",
+      },
+      "cn-northwest-1": Object {
+        "states": "states.cn-northwest-1.amazonaws.com",
+      },
+      "eu-central-1": Object {
+        "states": "states.eu-central-1.amazonaws.com",
+      },
+      "eu-north-1": Object {
+        "states": "states.eu-north-1.amazonaws.com",
+      },
+      "eu-south-1": Object {
+        "states": "states.eu-south-1.amazonaws.com",
+      },
+      "eu-south-2": Object {
+        "states": "states.eu-south-2.amazonaws.com",
+      },
+      "eu-west-1": Object {
+        "states": "states.eu-west-1.amazonaws.com",
+      },
+      "eu-west-2": Object {
+        "states": "states.eu-west-2.amazonaws.com",
+      },
+      "eu-west-3": Object {
+        "states": "states.eu-west-3.amazonaws.com",
+      },
+      "me-south-1": Object {
+        "states": "states.me-south-1.amazonaws.com",
+      },
+      "sa-east-1": Object {
+        "states": "states.sa-east-1.amazonaws.com",
+      },
+      "us-east-1": Object {
+        "states": "states.us-east-1.amazonaws.com",
+      },
+      "us-east-2": Object {
+        "states": "states.us-east-2.amazonaws.com",
+      },
+      "us-gov-east-1": Object {
+        "states": "states.us-gov-east-1.amazonaws.com",
+      },
+      "us-gov-west-1": Object {
+        "states": "states.us-gov-west-1.amazonaws.com",
+      },
+      "us-iso-east-1": Object {
+        "states": "states.amazonaws.com",
+      },
+      "us-iso-west-1": Object {
+        "states": "states.amazonaws.com",
+      },
+      "us-isob-east-1": Object {
+        "states": "states.amazonaws.com",
+      },
+      "us-west-1": Object {
+        "states": "states.us-west-1.amazonaws.com",
+      },
+      "us-west-2": Object {
+        "states": "states.us-west-2.amazonaws.com",
+      },
+    },
+  },
+  "Outputs": Object {
+    "TextAnalisysRestApiEndpointCA416BBD": Object {
+      "Value": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "https://",
+            Object {
+              "Ref": "TextAnalisysRestApi8D823A67",
+            },
+            ".execute-api.",
+            Object {
+              "Ref": "AWS::Region",
+            },
+            ".",
+            Object {
+              "Ref": "AWS::URLSuffix",
+            },
+            "/",
+            Object {
+              "Ref": "TextAnalisysRestApiDeploymentStageprodDADD5CF0",
+            },
+            "/",
+          ],
+        ],
+      },
+    },
+  },
+  "Parameters": Object {
+    "BootstrapVersion": Object {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": Object {
+    "ComprehendLambdaB86292DA": Object {
+      "DependsOn": Array [
+        "ComprehendLambdaServiceRoleDefaultPolicyCDE1F4C1",
+        "ComprehendLambdaServiceRole27C75036",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "62582a83ef1f654c1d8301cea9a86fa1b48a9c0d47b9b3ef0330082408838b7a.zip",
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+          },
+        },
+        "FunctionName": "ComprehendLambda",
+        "Handler": "index.handler",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "ComprehendLambdaServiceRole27C75036",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs14.x",
+        "TracingConfig": Object {
+          "Mode": "Active",
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "ComprehendLambdaServiceRole27C75036": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "ComprehendLambdaServiceRoleDefaultPolicyCDE1F4C1": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": "comprehend:DetectDominantLanguage",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "ComprehendLambdaServiceRoleDefaultPolicyCDE1F4C1",
+        "Roles": Array [
+          Object {
+            "Ref": "ComprehendLambdaServiceRole27C75036",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "PostModelD4C7F5B5": Object {
+      "Properties": Object {
+        "ContentType": "application/json",
+        "RestApiId": Object {
+          "Ref": "TextAnalisysRestApi8D823A67",
+        },
+        "Schema": Object {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "properties": Object {
+            "txt": Object {
+              "type": "string",
+            },
+          },
+          "required": Array [
+            "txt",
+          ],
+          "title": "PostRequest",
+          "type": "object",
+        },
+      },
+      "Type": "AWS::ApiGateway::Model",
+    },
+    "PostValidator2B2DDAD7": Object {
+      "Properties": Object {
+        "Name": "validator",
+        "RestApiId": Object {
+          "Ref": "TextAnalisysRestApi8D823A67",
+        },
+        "ValidateRequestBody": true,
+        "ValidateRequestParameters": false,
+      },
+      "Type": "AWS::ApiGateway::RequestValidator",
+    },
+    "TextAnalisysPolicy30E506FA": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "states:StartExecution",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Ref": "TextStateMachine95BF0DB2",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "TextAnalisysPolicy30E506FA",
+        "Roles": Array [
+          Object {
+            "Ref": "TextAnalisysRole6344908A",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "TextAnalisysRestApi8D823A67": Object {
+      "Properties": Object {
+        "Name": "TextAnalisys",
+      },
+      "Type": "AWS::ApiGateway::RestApi",
+    },
+    "TextAnalisysRestApiAccount60DCE906": Object {
+      "DependsOn": Array [
+        "TextAnalisysRestApi8D823A67",
+      ],
+      "Properties": Object {
+        "CloudWatchRoleArn": Object {
+          "Fn::GetAtt": Array [
+            "TextAnalisysRestApiCloudWatchRole5F9FFD02",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::ApiGateway::Account",
+    },
+    "TextAnalisysRestApiCloudWatchRole5F9FFD02": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "apigateway.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "TextAnalisysRestApiDeployment5395F881013a8f290e54c81c754759ce8b586097": Object {
+      "DependsOn": Array [
+        "PostModelD4C7F5B5",
+        "PostValidator2B2DDAD7",
+        "TextAnalisysRestApiSendTextPOSTCB593BDF",
+        "TextAnalisysRestApiSendText508044AB",
+      ],
+      "Properties": Object {
+        "Description": "Automatically created by the RestApi construct",
+        "RestApiId": Object {
+          "Ref": "TextAnalisysRestApi8D823A67",
+        },
+      },
+      "Type": "AWS::ApiGateway::Deployment",
+    },
+    "TextAnalisysRestApiDeploymentStageprodDADD5CF0": Object {
+      "DependsOn": Array [
+        "TextAnalisysRestApiAccount60DCE906",
+      ],
+      "Properties": Object {
+        "DeploymentId": Object {
+          "Ref": "TextAnalisysRestApiDeployment5395F881013a8f290e54c81c754759ce8b586097",
+        },
+        "RestApiId": Object {
+          "Ref": "TextAnalisysRestApi8D823A67",
+        },
+        "StageName": "prod",
+      },
+      "Type": "AWS::ApiGateway::Stage",
+    },
+    "TextAnalisysRestApiSendText508044AB": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Fn::GetAtt": Array [
+            "TextAnalisysRestApi8D823A67",
+            "RootResourceId",
+          ],
+        },
+        "PathPart": "SendText",
+        "RestApiId": Object {
+          "Ref": "TextAnalisysRestApi8D823A67",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "TextAnalisysRestApiSendTextPOSTCB593BDF": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "POST",
+        "Integration": Object {
+          "Credentials": Object {
+            "Fn::GetAtt": Array [
+              "TextAnalisysRole6344908A",
+              "Arn",
+            ],
+          },
+          "IntegrationHttpMethod": "POST",
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseTemplates": Object {
+                "application/json": "{\\"pk\\": \\"a940612ae359e2b4feb95bcec5f9cfc963d9d6f291940e6e3527fa82cc750d6f\\"}",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": Object {
+              "Fn::Join": Array [
+                "",
+                Array [
+                  "
+        {
+          \\"input\\": \\"$util.escapeJavaScript($input.body)\\",
+          \\"stateMachineArn\\": \\"",
+                  Object {
+                    "Ref": "TextStateMachine95BF0DB2",
+                  },
+                  "\\"
+        }",
+                ],
+              ],
+            },
+          },
+          "Type": "AWS",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":states:action/StartExecution",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "StatusCode": "200",
+          },
+        ],
+        "RequestModels": Object {
+          "application/json": Object {
+            "Ref": "PostModelD4C7F5B5",
+          },
+        },
+        "RequestValidatorId": Object {
+          "Ref": "PostValidator2B2DDAD7",
+        },
+        "ResourceId": Object {
+          "Ref": "TextAnalisysRestApiSendText508044AB",
+        },
+        "RestApiId": Object {
+          "Ref": "TextAnalisysRestApi8D823A67",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "TextAnalisysRole6344908A": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "apigateway.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "TextStateMachine95BF0DB2": Object {
+      "DependsOn": Array [
+        "TextStateMachineRoleDefaultPolicy7A727CB5",
+        "TextStateMachineRoleA1896FF6",
+      ],
+      "Properties": Object {
+        "DefinitionString": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "{\\"StartAt\\":\\"DynamoDBPutText\\",\\"States\\":{\\"DynamoDBPutText\\":{\\"Next\\":\\"ComprehendInvoke\\",\\"Type\\":\\"Task\\",\\"ResultPath\\":null,\\"Resource\\":\\"arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::dynamodb:putItem\\",\\"Parameters\\":{\\"Item\\":{\\"txt\\":{\\"S.$\\":\\"$.txt\\"}},\\"TableName\\":\\"",
+              Object {
+                "Ref": "TextTableAD0EFD79",
+              },
+              "\\"}},\\"ComprehendInvoke\\":{\\"Next\\":\\"LanguageTask\\",\\"Retry\\":[{\\"ErrorEquals\\":[\\"Lambda.ServiceException\\",\\"Lambda.AWSLambdaException\\",\\"Lambda.SdkClientException\\"],\\"IntervalSeconds\\":2,\\"MaxAttempts\\":6,\\"BackoffRate\\":2}],\\"Type\\":\\"Task\\",\\"Resource\\":\\"arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::lambda:invoke\\",\\"Parameters\\":{\\"FunctionName\\":\\"",
+              Object {
+                "Fn::GetAtt": Array [
+                  "ComprehendLambdaB86292DA",
+                  "Arn",
+                ],
+              },
+              "\\",\\"Payload.$\\":\\"$\\"}},\\"LanguageTask\\":{\\"Type\\":\\"Map\\",\\"End\\":true,\\"InputPath\\":\\"$.Payload\\",\\"Iterator\\":{\\"StartAt\\":\\"DynamoDBUpdateLanguage\\",\\"States\\":{\\"DynamoDBUpdateLanguage\\":{\\"End\\":true,\\"Type\\":\\"Task\\",\\"InputPath\\":\\"$.Payload\\",\\"ResultPath\\":null,\\"Resource\\":\\"arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::dynamodb:updateItem\\",\\"Parameters\\":{\\"Key\\":{\\"txt\\":{\\"S.$\\":\\"$.txt\\"}},\\"TableName\\":\\"",
+              Object {
+                "Ref": "TextTableAD0EFD79",
+              },
+              "\\",\\"ExpressionAttributeValues\\":{\\":lang\\":{\\"M\\":{\\"LanguageCode\\":{\\"S.$\\":\\"$.LanguageCode\\"},\\"Score\\":{\\"S\\":\\"-1.9e+289\\"}}}},\\"UpdateExpression\\":\\"SET languages = :lang\\"}}}},\\"ItemsPath\\":\\"$.Payload.languages\\"}},\\"TimeoutSeconds\\":300}",
+            ],
+          ],
+        },
+        "RoleArn": Object {
+          "Fn::GetAtt": Array [
+            "TextStateMachineRoleA1896FF6",
+            "Arn",
+          ],
+        },
+        "TracingConfiguration": Object {
+          "Enabled": true,
+        },
+      },
+      "Type": "AWS::StepFunctions::StateMachine",
+    },
+    "TextStateMachineRoleA1896FF6": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": Object {
+                  "Fn::FindInMap": Array [
+                    "ServiceprincipalMap",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    "states",
+                  ],
+                },
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "TextStateMachineRoleDefaultPolicy7A727CB5": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+                "xray:GetSamplingRules",
+                "xray:GetSamplingTargets",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": "dynamodb:PutItem",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":dynamodb:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":table/",
+                    Object {
+                      "Ref": "TextTableAD0EFD79",
+                    },
+                  ],
+                ],
+              },
+            },
+            Object {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "ComprehendLambdaB86292DA",
+                  "Arn",
+                ],
+              },
+            },
+            Object {
+              "Action": "dynamodb:UpdateItem",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":dynamodb:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":table/",
+                    Object {
+                      "Ref": "TextTableAD0EFD79",
+                    },
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "TextStateMachineRoleDefaultPolicy7A727CB5",
+        "Roles": Array [
+          Object {
+            "Ref": "TextStateMachineRoleA1896FF6",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "TextTableAD0EFD79": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "AttributeDefinitions": Array [
+          Object {
+            "AttributeName": "txt",
+            "AttributeType": "S",
+          },
+        ],
+        "KeySchema": Array [
+          Object {
+            "AttributeName": "txt",
+            "KeyType": "HASH",
+          },
+        ],
+        "ProvisionedThroughput": Object {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5,
+        },
+        "TableName": "TextTable",
+      },
+      "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Delete",
+    },
+  },
+  "Rules": Object {
+    "CheckBootstrapVersion": Object {
+      "Assertions": Array [
+        Object {
+          "Assert": Object {
+            "Fn::Not": Array [
+              Object {
+                "Fn::Contains": Array [
+                  Array [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  Object {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;

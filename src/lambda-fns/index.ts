@@ -1,1 +1,1 @@
-export * from './comprehend-lambda';
+export * from "./comprehend-lambda";

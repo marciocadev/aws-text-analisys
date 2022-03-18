@@ -1,6 +1,6 @@
 import { awscdk } from "projen";
 const project = new awscdk.AwsCdkTypeScriptApp({
-  cdkVersion: "2.16.0",
+  cdkVersion: "2.17.0",
   defaultReleaseBranch: "main",
   name: "aws-text-analisys",
   projenrcTs: true,
