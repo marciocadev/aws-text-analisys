@@ -500,7 +500,7 @@ Object {
                   "Arn",
                 ],
               },
-              "\\",\\"Payload.$\\":\\"$\\"}},\\"LanguageTask\\":{\\"Type\\":\\"Map\\",\\"End\\":true,\\"InputPath\\":\\"$.Payload\\",\\"Iterator\\":{\\"StartAt\\":\\"DynamoDBUpdateLanguage\\",\\"States\\":{\\"DynamoDBUpdateLanguage\\":{\\"End\\":true,\\"Type\\":\\"Task\\",\\"InputPath\\":\\"$.Payload\\",\\"ResultPath\\":null,\\"Resource\\":\\"arn:",
+              "\\",\\"Payload.$\\":\\"$\\"}},\\"LanguageTask\\":{\\"Type\\":\\"Map\\",\\"End\\":true,\\"InputPath\\":\\"$.Payload\\",\\"Parameters\\":{\\"item.$\\":\\"$$.Map.Item.Value\\",\\"txt.$\\":\\"$.txt\\"},\\"Iterator\\":{\\"StartAt\\":\\"DynamoDBUpdateLanguage\\",\\"States\\":{\\"DynamoDBUpdateLanguage\\":{\\"End\\":true,\\"Type\\":\\"Task\\",\\"InputPath\\":\\"$\\",\\"ResultPath\\":null,\\"Resource\\":\\"arn:",
               Object {
                 "Ref": "AWS::Partition",
               },
@@ -508,7 +508,7 @@ Object {
               Object {
                 "Ref": "TextTableAD0EFD79",
               },
-              "\\",\\"ExpressionAttributeValues\\":{\\":lang\\":{\\"M\\":{\\"LanguageCode\\":{\\"S.$\\":\\"$.LanguageCode\\"},\\"Score\\":{\\"S\\":\\"-1.9e+289\\"}}}},\\"UpdateExpression\\":\\"SET languages = :lang\\"}}}},\\"ItemsPath\\":\\"$.Payload.languages\\"}},\\"TimeoutSeconds\\":300}",
+              "\\",\\"ExpressionAttributeNames\\":{\\"#Score.$\\":\\"$.item.LanguageCode\\"},\\"ExpressionAttributeValues\\":{\\":score\\":{\\"N.$\\":\\"States.Format('{}', $.item.Score)\\"}},\\"UpdateExpression\\":\\"SET #Score = :score\\"}}}},\\"ItemsPath\\":\\"$.languages\\"}}}",
             ],
           ],
         },
@@ -518,6 +518,7 @@ Object {
             "Arn",
           ],
         },
+        "StateMachineName": "TextAnalisysStateMachine",
         "TracingConfiguration": Object {
           "Enabled": true,
         },

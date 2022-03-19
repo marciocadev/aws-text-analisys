@@ -1,6 +1,0 @@
-{
-  "partitionKey": { "key": "UserId", "type": "string", "description": "User identification" },
-  "fields": [
-    { "key": "UserName", "type": "string", "description": "User name" }
-  ]
-}
