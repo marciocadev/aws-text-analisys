@@ -48,6 +48,11 @@ export class UserClient {
       upExp = upExp + '#UserName = :UserName,';
       expAttrNames['#UserName'] = 'UserName';
     };
+    if (item.NName !== null && item.NName !== undefined) {
+      expAttrVal[':NName'] = item.NName;
+      upExp = upExp + '#NName = :NName,';
+      expAttrNames['#NName'] = 'NName';
+    };
     upExp = upExp.slice(0, -1);
     let keyObj: { [key: string]: any } = {};
     keyObj.UserId = partitionKey;

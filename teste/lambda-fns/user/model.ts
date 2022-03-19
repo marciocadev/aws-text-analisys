@@ -12,4 +12,10 @@ export interface User {
   * @attribute
   */
   readonly UserName?: string;
+  /**
+  * User name
+  *
+  * @attribute
+  */
+  readonly NName?: number;
 }

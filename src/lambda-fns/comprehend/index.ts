@@ -10,7 +10,7 @@ const comprehendClient = new ComprehendClient({
 
 export const handler = async (event: any) => {
   const { txt } = event;
-  let languages;
+  let languages; //: any[] = [];
 
   try {
     const params: DetectDominantLanguageCommandInput = {
@@ -19,6 +19,13 @@ export const handler = async (event: any) => {
     const command = new DetectDominantLanguageCommand(params);
     const result = await comprehendClient.send(command);
     languages = result.Languages;
+    // const listLang = (result.Languages ? result.Languages : [])
+    // for (let i = 0; i < listLang.length; i++) {
+    //   languages.push({
+    //     Score: listLang[i].Score?.toString(),
+    //     LanguageCode: listLang[i].LanguageCode
+    //   })
+    // }
   } catch (err) {
     console.log(err);
   }
