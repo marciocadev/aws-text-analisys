@@ -16,41 +16,23 @@ import {
   Role,
   ServicePrincipal,
 } from "aws-cdk-lib/aws-iam";
-import {
-  Chain,
-  JsonPath,
-  Map,
-  StateMachine,
-} from "aws-cdk-lib/aws-stepfunctions";
+import { Chain, StateMachine } from "aws-cdk-lib/aws-stepfunctions";
 import { Construct } from "constructs";
-import sha256 from "crypto-js/sha256";
 import { TextTable } from "./dynamodb/text-table";
-import {
-  ComprehendLambda,
-  //, TestLambda
-} from "./lambda-fns";
+import { DetectDominantLanguageLambda } from "./lambda-fns";
 
 export class MyStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps = {}) {
     super(scope, id, props);
 
     const table = new TextTable(this, "TextTable");
-    const comprehendLambda = new ComprehendLambda(this, "ComprehendLambda");
-    //const testLambda = new TestLambda(this, "TestLambda");
-    const languageTask = new Map(this, "LanguageTask", {
-      inputPath: JsonPath.stringAt("$.Payload"),
-      itemsPath: JsonPath.stringAt("$.languages"),
-      parameters: {
-        "item.$": "$$.Map.Item.Value",
-        "txt.$": "$.txt",
-      },
-    }).iterator(
-      // testLambda.testTask()
-      table.updateLanguageTask()
+    const detectDominantlanguageLambda = new DetectDominantLanguageLambda(
+      this,
+      "ComprehendLambda"
     );
     const chain = Chain.start(table.putTextTask())
-      .next(comprehendLambda.comprehendTask())
-      .next(languageTask);
+      .next(detectDominantlanguageLambda.comprehendTask())
+      .next(table.listLanguages());
     const stateMachine = new StateMachine(this, "TextStateMachine", {
       stateMachineName: "TextAnalisysStateMachine",
       definition: chain,
@@ -78,9 +60,7 @@ export class MyStack extends Stack {
         {
           statusCode: "200",
           responseTemplates: {
-            "application/json": `{"pk": "${sha256(
-              JSON.stringify("$input.body")
-            )}"}`,
+            "application/json": "Texto enviado com sucesso",
           },
         },
       ],
