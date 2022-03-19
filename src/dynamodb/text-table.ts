@@ -27,7 +27,6 @@ export class TextTable extends Table {
       },
       table: this,
       resultPath: JsonPath.DISCARD,
-      // resultPath: JsonPath.stringAt('$.output_from_ddb_put')
     });
   }
 
@@ -38,21 +37,15 @@ export class TextTable extends Table {
       },
       table: this,
       expressionAttributeValues: {
-        // ":lang": DynamoAttributeValue.listFromJsonPath(JsonPath.stringAt('$.languages'))
-
-        ":lang": DynamoAttributeValue.fromMap({
-          LanguageCode: DynamoAttributeValue.fromString(
-            JsonPath.stringAt("$.LanguageCode")
-          ),
-          Score: DynamoAttributeValue.fromString(
-            JsonPath.numberAt("$.Score").toPrecision(2)
-          ),
-        }),
-
-        // ':lang': DynamoAttributeValue.listFromJsonPath('$.languages')
+        ":score": DynamoAttributeValue.fromNumber(
+          JsonPath.numberAt('$.item.Score')
+        )
       },
-      updateExpression: "SET languages = :lang",
-      inputPath: JsonPath.stringAt("$.Payload"),
+      expressionAttributeNames: {
+        "#Score": JsonPath.stringAt("$.item.LanguageCode")
+      },
+      updateExpression: "SET #Score = :score",
+      inputPath: JsonPath.stringAt("$"),
       resultPath: JsonPath.DISCARD,
     });
   }

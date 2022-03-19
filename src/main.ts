@@ -1,4 +1,4 @@
-import { App, Duration, Stack, StackProps } from "aws-cdk-lib";
+import { App, Stack, StackProps } from "aws-cdk-lib";
 import {
   AwsIntegration,
   IntegrationOptions,
@@ -16,11 +16,13 @@ import {
   Role,
   ServicePrincipal,
 } from "aws-cdk-lib/aws-iam";
-import { Chain, Map, StateMachine } from "aws-cdk-lib/aws-stepfunctions";
+import { Chain, JsonPath, Map, StateMachine } from "aws-cdk-lib/aws-stepfunctions";
 import { Construct } from "constructs";
 import sha256 from "crypto-js/sha256";
 import { TextTable } from "./dynamodb/text-table";
-import { ComprehendLambda } from "./lambda-fns";
+import { ComprehendLambda
+  //, TestLambda 
+} from "./lambda-fns";
 
 export class MyStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps = {}) {
@@ -28,17 +30,25 @@ export class MyStack extends Stack {
 
     const table = new TextTable(this, "TextTable");
     const comprehendLambda = new ComprehendLambda(this, "ComprehendLambda");
+    //const testLambda = new TestLambda(this, "TestLambda");
     const languageTask = new Map(this, "LanguageTask", {
-      inputPath: "$.Payload",
-      itemsPath: "$.Payload.languages",
-    }).iterator(table.updateLanguageTask());
+      inputPath: JsonPath.stringAt("$.Payload"),
+      itemsPath: JsonPath.stringAt("$.languages"),
+      parameters: {
+        "item.$": "$$.Map.Item.Value",
+        "txt.$": "$.txt"
+      }
+    }).iterator(
+      // testLambda.testTask()
+      table.updateLanguageTask()
+    );
     const chain = Chain.start(table.putTextTask())
       .next(comprehendLambda.comprehendTask())
       .next(languageTask);
     const stateMachine = new StateMachine(this, "TextStateMachine", {
+      stateMachineName: "TextAnalisysStateMachine",
       definition: chain,
       tracingEnabled: true,
-      timeout: Duration.minutes(5),
     });
 
     const apiGatewayStepFunctionRole = new Role(this, "TextAnalisysRole", {
