@@ -5,11 +5,11 @@ import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { LambdaInvoke } from "aws-cdk-lib/aws-stepfunctions-tasks";
 import { Construct } from "constructs";
 
-export class ComprehendLambda extends NodejsFunction {
+export class DetectDominantLanguageLambda extends NodejsFunction {
   constructor(scope: Construct, id: string) {
     super(scope, id, {
       functionName: id,
-      entry: join(__dirname, "./comprehend/index.ts"),
+      entry: join(__dirname, "./comprehend/detect-dominant-language/index.ts"),
       handler: "handler",
       runtime: Runtime.NODEJS_14_X,
       tracing: Tracing.ACTIVE,
@@ -28,7 +28,7 @@ export class ComprehendLambda extends NodejsFunction {
   }
 
   comprehendTask() {
-    return new LambdaInvoke(this, "ComprehendInvoke", {
+    return new LambdaInvoke(this, "DetectDominantLanguageInvoke", {
       lambdaFunction: this,
     });
   }

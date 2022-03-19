@@ -1,2 +1,1 @@
-export * from "./comprehend-lambda";
-export * from "./test-lambda";
+export * from "./detect-dominant-language";
