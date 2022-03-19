@@ -1,6 +1,6 @@
 import { RemovalPolicy } from "aws-cdk-lib";
 import { AttributeType, Table } from "aws-cdk-lib/aws-dynamodb";
-import { JsonPath } from "aws-cdk-lib/aws-stepfunctions";
+import { JsonPath, Map } from "aws-cdk-lib/aws-stepfunctions";
 import {
   DynamoAttributeValue,
   DynamoPutItem,
@@ -48,5 +48,18 @@ export class TextTable extends Table {
       inputPath: JsonPath.stringAt("$"),
       resultPath: JsonPath.DISCARD,
     });
+  }
+
+  listLanguages() {
+    return new Map(this, "ListLanguages", {
+      inputPath: JsonPath.stringAt("$.Payload"),
+      itemsPath: JsonPath.stringAt("$.languages"),
+      parameters: {
+        "item.$": "$$.Map.Item.Value",
+        "txt.$": "$.txt",
+      }
+    }).iterator(
+      this.updateLanguageTask()
+    );
   }
 }
