@@ -16,22 +16,20 @@ import {
   Role,
   ServicePrincipal,
 } from "aws-cdk-lib/aws-iam";
-import {
-  Chain,
-  StateMachine,
-} from "aws-cdk-lib/aws-stepfunctions";
+import { Chain, StateMachine } from "aws-cdk-lib/aws-stepfunctions";
 import { Construct } from "constructs";
 import { TextTable } from "./dynamodb/text-table";
-import {
-  DetectDominantLanguageLambda,
-} from "./lambda-fns";
+import { DetectDominantLanguageLambda } from "./lambda-fns";
 
 export class MyStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps = {}) {
     super(scope, id, props);
 
     const table = new TextTable(this, "TextTable");
-    const detectDominantlanguageLambda = new DetectDominantLanguageLambda(this, "ComprehendLambda");
+    const detectDominantlanguageLambda = new DetectDominantLanguageLambda(
+      this,
+      "ComprehendLambda"
+    );
     const chain = Chain.start(table.putTextTask())
       .next(detectDominantlanguageLambda.comprehendTask())
       .next(table.listLanguages());

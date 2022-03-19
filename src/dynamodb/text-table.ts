@@ -57,9 +57,7 @@ export class TextTable extends Table {
       parameters: {
         "item.$": "$$.Map.Item.Value",
         "txt.$": "$.txt",
-      }
-    }).iterator(
-      this.updateLanguageTask()
-    );
+      },
+    }).iterator(this.updateLanguageTask());
   }
 }
