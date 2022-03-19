@@ -16,12 +16,18 @@ import {
   Role,
   ServicePrincipal,
 } from "aws-cdk-lib/aws-iam";
-import { Chain, JsonPath, Map, StateMachine } from "aws-cdk-lib/aws-stepfunctions";
+import {
+  Chain,
+  JsonPath,
+  Map,
+  StateMachine,
+} from "aws-cdk-lib/aws-stepfunctions";
 import { Construct } from "constructs";
 import sha256 from "crypto-js/sha256";
 import { TextTable } from "./dynamodb/text-table";
-import { ComprehendLambda
-  //, TestLambda 
+import {
+  ComprehendLambda,
+  //, TestLambda
 } from "./lambda-fns";
 
 export class MyStack extends Stack {
@@ -36,8 +42,8 @@ export class MyStack extends Stack {
       itemsPath: JsonPath.stringAt("$.languages"),
       parameters: {
         "item.$": "$$.Map.Item.Value",
-        "txt.$": "$.txt"
-      }
+        "txt.$": "$.txt",
+      },
     }).iterator(
       // testLambda.testTask()
       table.updateLanguageTask()
