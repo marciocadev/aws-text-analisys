@@ -39,10 +39,10 @@ export class TextTable extends Table {
       expressionAttributeValues: {
         ":score": DynamoAttributeValue.numberFromString(
           JsonPath.stringAt(`States.Format('{}', $.item.Score)`)
-        )
+        ),
       },
       expressionAttributeNames: {
-        "#Score": JsonPath.stringAt("$.item.LanguageCode")
+        "#Score": JsonPath.stringAt("$.item.LanguageCode"),
       },
       updateExpression: "SET #Score = :score",
       inputPath: JsonPath.stringAt("$"),
