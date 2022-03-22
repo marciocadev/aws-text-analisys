@@ -259,9 +259,26 @@ Object {
         "TextAnalisysRestApiAccount60DCE906",
       ],
       "Properties": Object {
+        "AccessLogSetting": Object {
+          "DestinationArn": Object {
+            "Fn::GetAtt": Array [
+              "TextLogGroupsEBFB9F42",
+              "Arn",
+            ],
+          },
+          "Format": "$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] \\"$context.httpMethod $context.resourcePath $context.protocol\\" $context.status $context.responseLength $context.requestId",
+        },
         "DeploymentId": Object {
           "Ref": "TextAnalisysRestApiDeployment5395F881bb30b78f413751b71bfefe7d77b3455c",
         },
+        "MethodSettings": Array [
+          Object {
+            "DataTraceEnabled": true,
+            "HttpMethod": "*",
+            "LoggingLevel": "INFO",
+            "ResourcePath": "/*",
+          },
+        ],
         "RestApiId": Object {
           "Ref": "TextAnalisysRestApi8D823A67",
         },
@@ -379,6 +396,15 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
+    "TextLogGroupsEBFB9F42": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "LogGroupName": "TextLogs",
+        "RetentionInDays": 1,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
     "TextStateMachine95BF0DB2": Object {
       "DependsOn": Array [
         "TextStateMachineRoleDefaultPolicy7A727CB5",
@@ -397,11 +423,11 @@ Object {
               Object {
                 "Ref": "TextTableAD0EFD79",
               },
-              "\\"}},\\"DetectDominantLanguage\\":{\\"Next\\":\\"ListLanguages\\",\\"Type\\":\\"Task\\",\\"Comment\\":\\"Comprehend Detect Dominant Language\\",\\"Resource\\":\\"arn:",
+              "\\"}},\\"DetectDominantLanguage\\":{\\"Next\\":\\"ListLanguages\\",\\"Type\\":\\"Task\\",\\"Comment\\":\\"Comprehend Detect Dominant Language\\",\\"OutputPath\\":\\"$\\",\\"ResultPath\\":\\"$.result\\",\\"Resource\\":\\"arn:",
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":states:::aws-sdk:comprehend:DetectDominantLanguage\\",\\"Parameters\\":{\\"Text.$\\":\\"$.txt\\"}},\\"ListLanguages\\":{\\"Type\\":\\"Map\\",\\"End\\":true,\\"Parameters\\":{\\"item.$\\":\\"$$.Map.Item.Value\\",\\"txt.$\\":\\"$.txt\\"},\\"Iterator\\":{\\"StartAt\\":\\"DynamoDBUpdateLanguage\\",\\"States\\":{\\"DynamoDBUpdateLanguage\\":{\\"End\\":true,\\"Type\\":\\"Task\\",\\"InputPath\\":\\"$\\",\\"ResultPath\\":null,\\"Resource\\":\\"arn:",
+              ":states:::aws-sdk:comprehend:detectDominantLanguage\\",\\"Parameters\\":{\\"Text.$\\":\\"$.txt\\"}},\\"ListLanguages\\":{\\"Type\\":\\"Map\\",\\"End\\":true,\\"InputPath\\":\\"$\\",\\"Parameters\\":{\\"item.$\\":\\"$$.Map.Item.Value\\",\\"txt.$\\":\\"$.txt\\"},\\"Iterator\\":{\\"StartAt\\":\\"DynamoDBUpdateLanguage\\",\\"States\\":{\\"DynamoDBUpdateLanguage\\":{\\"End\\":true,\\"Type\\":\\"Task\\",\\"InputPath\\":\\"$\\",\\"ResultPath\\":null,\\"Resource\\":\\"arn:",
               Object {
                 "Ref": "AWS::Partition",
               },
@@ -409,9 +435,24 @@ Object {
               Object {
                 "Ref": "TextTableAD0EFD79",
               },
-              "\\",\\"ExpressionAttributeNames\\":{\\"#Score.$\\":\\"$.item.LanguageCode\\"},\\"ExpressionAttributeValues\\":{\\":score\\":{\\"N.$\\":\\"States.Format('{}', $.item.Score)\\"}},\\"UpdateExpression\\":\\"SET #Score = :score\\"}}}},\\"ItemsPath\\":\\"$.Languages\\"}}}",
+              "\\",\\"ExpressionAttributeNames\\":{\\"#Score.$\\":\\"$.item.LanguageCode\\"},\\"ExpressionAttributeValues\\":{\\":score\\":{\\"N.$\\":\\"States.Format('{}', $.item.Score)\\"}},\\"UpdateExpression\\":\\"SET #Score = :score\\"}}}},\\"ItemsPath\\":\\"$.result.Languages\\"}}}",
             ],
           ],
+        },
+        "LoggingConfiguration": Object {
+          "Destinations": Array [
+            Object {
+              "CloudWatchLogsLogGroup": Object {
+                "LogGroupArn": Object {
+                  "Fn::GetAtt": Array [
+                    "TextLogGroupsEBFB9F42",
+                    "Arn",
+                  ],
+                },
+              },
+            },
+          ],
+          "Level": "ALL",
         },
         "RoleArn": Object {
           "Fn::GetAtt": Array [
@@ -457,6 +498,20 @@ Object {
           "Statement": Array [
             Object {
               "Action": Array [
+                "logs:CreateLogDelivery",
+                "logs:GetLogDelivery",
+                "logs:UpdateLogDelivery",
+                "logs:DeleteLogDelivery",
+                "logs:ListLogDeliveries",
+                "logs:PutResourcePolicy",
+                "logs:DescribeResourcePolicies",
+                "logs:DescribeLogGroups",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
                 "xray:PutTraceSegments",
                 "xray:PutTelemetryRecords",
                 "xray:GetSamplingRules",
@@ -493,7 +548,7 @@ Object {
               },
             },
             Object {
-              "Action": "comprehend:DetectDominantLanguage",
+              "Action": "comprehend:detectDominantLanguage",
               "Effect": "Allow",
               "Resource": "*",
             },

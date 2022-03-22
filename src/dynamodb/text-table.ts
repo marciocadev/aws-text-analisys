@@ -23,7 +23,9 @@ export class TextTable extends Table {
   putTextTask(inputField: string) {
     return new DynamoPutItem(this, "DynamoDBPutText", {
       item: {
-        txt: DynamoAttributeValue.fromString(JsonPath.stringAt(`$.${inputField}`)),
+        txt: DynamoAttributeValue.fromString(
+          JsonPath.stringAt(`$.${inputField}`)
+        ),
       },
       table: this,
       resultPath: JsonPath.DISCARD,
@@ -33,7 +35,9 @@ export class TextTable extends Table {
   updateLanguageTask(inputField: string) {
     return new DynamoUpdateItem(this, "DynamoDBUpdateLanguage", {
       key: {
-        txt: DynamoAttributeValue.fromString(JsonPath.stringAt(`$.${inputField}`)),
+        txt: DynamoAttributeValue.fromString(
+          JsonPath.stringAt(`$.${inputField}`)
+        ),
       },
       table: this,
       expressionAttributeValues: {

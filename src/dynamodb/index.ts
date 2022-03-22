@@ -1,1 +1,1 @@
-export * from './text-table';
+export * from "./text-table";

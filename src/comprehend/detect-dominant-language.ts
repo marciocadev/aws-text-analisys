@@ -13,7 +13,7 @@ export class DetectDominantLanguage extends CallAwsService {
       },
       iamResources: ["*"],
       resultPath: "$.result",
-      outputPath: "$"
+      outputPath: "$",
     });
   }
 }

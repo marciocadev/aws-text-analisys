@@ -1,1 +1,1 @@
-export * from './detect-dominant-language';
+export * from "./detect-dominant-language";
