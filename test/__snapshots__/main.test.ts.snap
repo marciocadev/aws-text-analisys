@@ -183,7 +183,7 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "TextApiGatewayDeployment754CD196e9ed3d766f59b31160abb8d2644f244a": Object {
+    "TextApiGatewayDeployment754CD1960f4747b34f2430a5c5b4d5897fc85031": Object {
       "DependsOn": Array [
         "TextApiGatewaySendTextPOST0FFD62E4",
         "TextApiGatewaySendText3EB8530A",
@@ -213,7 +213,7 @@ Object {
           "Format": "$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] \\"$context.httpMethod $context.resourcePath $context.protocol\\" $context.status $context.responseLength $context.requestId",
         },
         "DeploymentId": Object {
-          "Ref": "TextApiGatewayDeployment754CD196e9ed3d766f59b31160abb8d2644f244a",
+          "Ref": "TextApiGatewayDeployment754CD1960f4747b34f2430a5c5b4d5897fc85031",
         },
         "MethodSettings": Array [
           Object {
@@ -295,21 +295,21 @@ Object {
             Object {
               "ResponseTemplates": Object {
                 "application/json": "
-      #if ($input.path('$.__type') != \\"\\")
-        #set ($context.responseOverride.status = 500)
-        {
-          \\"requestId\\": \\"$context.requestId\\",
-          \\"message\\": \\"$input.path('$.message').trim()\\"
-        }
-      #else
-        #set ($context.responseOverride.status = 200)
-        {
-          \\"requestId\\": \\"$context.requestId\\",
-          \\"executionArn\\": \\"$input.path('$.executionArn').trim()\\",
-          \\"startDate\\": \\"$input.path('$.startDate')\\"
-        }
-      #end
-    ",
+              #if ($input.path('$.__type') != \\"\\")
+                #set ($context.responseOverride.status = 500)
+                {
+                  \\"requestId\\": \\"$context.requestId\\",
+                  \\"message\\": \\"$input.path('$.message').trim()\\"
+                }
+              #else
+                #set ($context.responseOverride.status = 200)
+                {
+                  \\"requestId\\": \\"$context.requestId\\",
+                  \\"executionArn\\": \\"$input.path('$.executionArn').trim()\\",
+                  \\"startDate\\": \\"$input.path('$.startDate')\\"
+                }
+              #end
+            ",
               },
               "StatusCode": "200",
             },

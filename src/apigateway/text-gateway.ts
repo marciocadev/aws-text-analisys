@@ -72,7 +72,7 @@ export class TextGateway extends RestApi {
         {
           statusCode: "200",
           responseTemplates: {
-            "application/json":  `
+            "application/json": `
               #if ($input.path('$.__type') != "")
                 #set ($context.responseOverride.status = 500)
                 {
