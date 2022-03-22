@@ -5,6 +5,8 @@ import {
   JsonSchema,
   JsonSchemaType,
   JsonSchemaVersion,
+  LogGroupLogDestination,
+  MethodLoggingLevel,
   Model,
   RequestValidator,
   RestApi,
@@ -16,27 +18,38 @@ import {
   Role,
   ServicePrincipal,
 } from "aws-cdk-lib/aws-iam";
-import { Chain, StateMachine } from "aws-cdk-lib/aws-stepfunctions";
+import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
+import { Chain, LogLevel, StateMachine } from "aws-cdk-lib/aws-stepfunctions";
 import { Construct } from "constructs";
-import { TextTable } from "./dynamodb/text-table";
-import { DetectDominantLanguageLambda } from "./lambda-fns";
+import { DetectDominantLanguage } from "./comprehend";
+import { TextTable } from "./dynamodb";
 
 export class MyStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps = {}) {
     super(scope, id, props);
 
+    const logGroups = new LogGroup(this, "TextLogGroups", {
+      logGroupName: "TextLogs",
+      retention: RetentionDays.ONE_DAY,
+    });
+
     const table = new TextTable(this, "TextTable");
-    const detectDominantlanguageLambda = new DetectDominantLanguageLambda(
-      this,
-      "ComprehendLambda"
-    );
-    const chain = Chain.start(table.putTextTask())
-      .next(detectDominantlanguageLambda.comprehendTask())
-      .next(table.listLanguages());
+    const inputField: string = "txt";
+
+    const chain = Chain.start(table.putTextTask(inputField))
+      .next(
+        new DetectDominantLanguage(this, "DetectDominantLanguage", inputField)
+      )
+      .next(table.listLanguages(inputField));
+
     const stateMachine = new StateMachine(this, "TextStateMachine", {
       stateMachineName: "TextAnalisysStateMachine",
       definition: chain,
       tracingEnabled: true,
+      logs: {
+        destination: logGroups,
+        level: LogLevel.ALL,
+      },
     });
 
     const apiGatewayStepFunctionRole = new Role(this, "TextAnalisysRole", {
@@ -82,6 +95,11 @@ export class MyStack extends Stack {
 
     const apigateway = new RestApi(this, "TextAnalisysRestApi", {
       restApiName: "TextAnalisys",
+      deployOptions: {
+        accessLogDestination: new LogGroupLogDestination(logGroups),
+        loggingLevel: MethodLoggingLevel.INFO,
+        dataTraceEnabled: true,
+      },
     });
 
     const requestSchemaPost: JsonSchema = {

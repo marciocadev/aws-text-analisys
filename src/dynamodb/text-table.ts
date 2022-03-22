@@ -20,20 +20,24 @@ export class TextTable extends Table {
     });
   }
 
-  putTextTask() {
+  putTextTask(inputField: string) {
     return new DynamoPutItem(this, "DynamoDBPutText", {
       item: {
-        txt: DynamoAttributeValue.fromString(JsonPath.stringAt("$.txt")),
+        txt: DynamoAttributeValue.fromString(
+          JsonPath.stringAt(`$.${inputField}`)
+        ),
       },
       table: this,
       resultPath: JsonPath.DISCARD,
     });
   }
 
-  updateLanguageTask() {
+  updateLanguageTask(inputField: string) {
     return new DynamoUpdateItem(this, "DynamoDBUpdateLanguage", {
       key: {
-        txt: DynamoAttributeValue.fromString(JsonPath.stringAt("$.txt")),
+        txt: DynamoAttributeValue.fromString(
+          JsonPath.stringAt(`$.${inputField}`)
+        ),
       },
       table: this,
       expressionAttributeValues: {
@@ -50,14 +54,14 @@ export class TextTable extends Table {
     });
   }
 
-  listLanguages() {
+  listLanguages(inputField: string) {
     return new Map(this, "ListLanguages", {
-      inputPath: JsonPath.stringAt("$.Payload"),
-      itemsPath: JsonPath.stringAt("$.languages"),
+      inputPath: JsonPath.stringAt("$"),
+      itemsPath: JsonPath.stringAt("$.result.Languages"),
       parameters: {
         "item.$": "$$.Map.Item.Value",
-        "txt.$": "$.txt",
+        "txt.$": `$.${inputField}`,
       },
-    }).iterator(this.updateLanguageTask());
+    }).iterator(this.updateLanguageTask(inputField));
   }
 }
