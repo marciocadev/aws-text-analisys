@@ -97,14 +97,14 @@ Object {
     },
   },
   "Outputs": Object {
-    "TextAnalisysRestApiEndpointCA416BBD": Object {
+    "TextApiGatewayEndpoint1B713D84": Object {
       "Value": Object {
         "Fn::Join": Array [
           "",
           Array [
             "https://",
             Object {
-              "Ref": "TextAnalisysRestApi8D823A67",
+              "Ref": "TextApiGateway437DBC5F",
             },
             ".execute-api.",
             Object {
@@ -116,7 +116,7 @@ Object {
             },
             "/",
             Object {
-              "Ref": "TextAnalisysRestApiDeploymentStageprodDADD5CF0",
+              "Ref": "TextApiGatewayDeploymentStageprod2573B67D",
             },
             "/",
           ],
@@ -132,83 +132,27 @@ Object {
     },
   },
   "Resources": Object {
-    "PostModelD4C7F5B5": Object {
-      "Properties": Object {
-        "ContentType": "application/json",
-        "RestApiId": Object {
-          "Ref": "TextAnalisysRestApi8D823A67",
-        },
-        "Schema": Object {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "properties": Object {
-            "txt": Object {
-              "type": "string",
-            },
-          },
-          "required": Array [
-            "txt",
-          ],
-          "title": "PostRequest",
-          "type": "object",
-        },
-      },
-      "Type": "AWS::ApiGateway::Model",
-    },
-    "PostValidator2B2DDAD7": Object {
-      "Properties": Object {
-        "Name": "validator",
-        "RestApiId": Object {
-          "Ref": "TextAnalisysRestApi8D823A67",
-        },
-        "ValidateRequestBody": true,
-        "ValidateRequestParameters": false,
-      },
-      "Type": "AWS::ApiGateway::RequestValidator",
-    },
-    "TextAnalisysPolicy30E506FA": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "states:StartExecution",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Ref": "TextStateMachine95BF0DB2",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "TextAnalisysPolicy30E506FA",
-        "Roles": Array [
-          Object {
-            "Ref": "TextAnalisysRole6344908A",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "TextAnalisysRestApi8D823A67": Object {
+    "TextApiGateway437DBC5F": Object {
       "Properties": Object {
         "Name": "TextAnalisys",
       },
       "Type": "AWS::ApiGateway::RestApi",
     },
-    "TextAnalisysRestApiAccount60DCE906": Object {
+    "TextApiGatewayAccount54FA72E1": Object {
       "DependsOn": Array [
-        "TextAnalisysRestApi8D823A67",
+        "TextApiGateway437DBC5F",
       ],
       "Properties": Object {
         "CloudWatchRoleArn": Object {
           "Fn::GetAtt": Array [
-            "TextAnalisysRestApiCloudWatchRole5F9FFD02",
+            "TextApiGatewayCloudWatchRoleE5030C8C",
             "Arn",
           ],
         },
       },
       "Type": "AWS::ApiGateway::Account",
     },
-    "TextAnalisysRestApiCloudWatchRole5F9FFD02": Object {
+    "TextApiGatewayCloudWatchRoleE5030C8C": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -239,24 +183,24 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "TextAnalisysRestApiDeployment5395F881bb30b78f413751b71bfefe7d77b3455c": Object {
+    "TextApiGatewayDeployment754CD1960f4747b34f2430a5c5b4d5897fc85031": Object {
       "DependsOn": Array [
-        "PostModelD4C7F5B5",
-        "PostValidator2B2DDAD7",
-        "TextAnalisysRestApiSendTextPOSTCB593BDF",
-        "TextAnalisysRestApiSendText508044AB",
+        "TextApiGatewaySendTextPOST0FFD62E4",
+        "TextApiGatewaySendText3EB8530A",
+        "TextApiGatewayPostModel7A560F00",
+        "TextApiGatewayPostValidatorD406F27C",
       ],
       "Properties": Object {
         "Description": "Automatically created by the RestApi construct",
         "RestApiId": Object {
-          "Ref": "TextAnalisysRestApi8D823A67",
+          "Ref": "TextApiGateway437DBC5F",
         },
       },
       "Type": "AWS::ApiGateway::Deployment",
     },
-    "TextAnalisysRestApiDeploymentStageprodDADD5CF0": Object {
+    "TextApiGatewayDeploymentStageprod2573B67D": Object {
       "DependsOn": Array [
-        "TextAnalisysRestApiAccount60DCE906",
+        "TextApiGatewayAccount54FA72E1",
       ],
       "Properties": Object {
         "AccessLogSetting": Object {
@@ -269,46 +213,80 @@ Object {
           "Format": "$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] \\"$context.httpMethod $context.resourcePath $context.protocol\\" $context.status $context.responseLength $context.requestId",
         },
         "DeploymentId": Object {
-          "Ref": "TextAnalisysRestApiDeployment5395F881bb30b78f413751b71bfefe7d77b3455c",
+          "Ref": "TextApiGatewayDeployment754CD1960f4747b34f2430a5c5b4d5897fc85031",
         },
         "MethodSettings": Array [
           Object {
-            "DataTraceEnabled": true,
+            "DataTraceEnabled": false,
             "HttpMethod": "*",
             "LoggingLevel": "INFO",
             "ResourcePath": "/*",
           },
         ],
         "RestApiId": Object {
-          "Ref": "TextAnalisysRestApi8D823A67",
+          "Ref": "TextApiGateway437DBC5F",
         },
         "StageName": "prod",
+        "TracingEnabled": true,
       },
       "Type": "AWS::ApiGateway::Stage",
     },
-    "TextAnalisysRestApiSendText508044AB": Object {
+    "TextApiGatewayPostModel7A560F00": Object {
+      "Properties": Object {
+        "ContentType": "application/json",
+        "RestApiId": Object {
+          "Ref": "TextApiGateway437DBC5F",
+        },
+        "Schema": Object {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "properties": Object {
+            "txt": Object {
+              "type": "string",
+            },
+          },
+          "required": Array [
+            "txt",
+          ],
+          "title": "PostRequest",
+          "type": "object",
+        },
+      },
+      "Type": "AWS::ApiGateway::Model",
+    },
+    "TextApiGatewayPostValidatorD406F27C": Object {
+      "Properties": Object {
+        "Name": "validator",
+        "RestApiId": Object {
+          "Ref": "TextApiGateway437DBC5F",
+        },
+        "ValidateRequestBody": true,
+        "ValidateRequestParameters": false,
+      },
+      "Type": "AWS::ApiGateway::RequestValidator",
+    },
+    "TextApiGatewaySendText3EB8530A": Object {
       "Properties": Object {
         "ParentId": Object {
           "Fn::GetAtt": Array [
-            "TextAnalisysRestApi8D823A67",
+            "TextApiGateway437DBC5F",
             "RootResourceId",
           ],
         },
         "PathPart": "SendText",
         "RestApiId": Object {
-          "Ref": "TextAnalisysRestApi8D823A67",
+          "Ref": "TextApiGateway437DBC5F",
         },
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "TextAnalisysRestApiSendTextPOSTCB593BDF": Object {
+    "TextApiGatewaySendTextPOST0FFD62E4": Object {
       "Properties": Object {
         "AuthorizationType": "NONE",
         "HttpMethod": "POST",
         "Integration": Object {
           "Credentials": Object {
             "Fn::GetAtt": Array [
-              "TextAnalisysRole6344908A",
+              "TextApiGatewayTextAnalisysRole882C4790",
               "Arn",
             ],
           },
@@ -316,7 +294,22 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseTemplates": Object {
-                "application/json": "Texto enviado com sucesso",
+                "application/json": "
+              #if ($input.path('$.__type') != \\"\\")
+                #set ($context.responseOverride.status = 500)
+                {
+                  \\"requestId\\": \\"$context.requestId\\",
+                  \\"message\\": \\"$input.path('$.message').trim()\\"
+                }
+              #else
+                #set ($context.responseOverride.status = 200)
+                {
+                  \\"requestId\\": \\"$context.requestId\\",
+                  \\"executionArn\\": \\"$input.path('$.executionArn').trim()\\",
+                  \\"startDate\\": \\"$input.path('$.startDate')\\"
+                }
+              #end
+            ",
               },
               "StatusCode": "200",
             },
@@ -329,6 +322,18 @@ Object {
                   "
         {
           \\"input\\": \\"$util.escapeJavaScript($input.body)\\",
+          \\"name\\": \\"",
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "TextStateMachine95BF0DB2",
+                      "Name",
+                    ],
+                  },
+                  "-$util.base64Encode(
+            $util.escapeJavaScript(
+              $input.body
+            )
+          ).hashCode()\\",
           \\"stateMachineArn\\": \\"",
                   Object {
                     "Ref": "TextStateMachine95BF0DB2",
@@ -364,22 +369,45 @@ Object {
         ],
         "RequestModels": Object {
           "application/json": Object {
-            "Ref": "PostModelD4C7F5B5",
+            "Ref": "TextApiGatewayPostModel7A560F00",
           },
         },
         "RequestValidatorId": Object {
-          "Ref": "PostValidator2B2DDAD7",
+          "Ref": "TextApiGatewayPostValidatorD406F27C",
         },
         "ResourceId": Object {
-          "Ref": "TextAnalisysRestApiSendText508044AB",
+          "Ref": "TextApiGatewaySendText3EB8530A",
         },
         "RestApiId": Object {
-          "Ref": "TextAnalisysRestApi8D823A67",
+          "Ref": "TextApiGateway437DBC5F",
         },
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "TextAnalisysRole6344908A": Object {
+    "TextApiGatewayTextAnalisysPolicy1BACED98": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "states:StartExecution",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Ref": "TextStateMachine95BF0DB2",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "TextApiGatewayTextAnalisysPolicy1BACED98",
+        "Roles": Array [
+          Object {
+            "Ref": "TextApiGatewayTextAnalisysRole882C4790",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "TextApiGatewayTextAnalisysRole882C4790": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -397,13 +425,34 @@ Object {
       "Type": "AWS::IAM::Role",
     },
     "TextLogGroupsEBFB9F42": Object {
-      "DeletionPolicy": "Retain",
+      "DeletionPolicy": "Delete",
       "Properties": Object {
         "LogGroupName": "TextLogs",
         "RetentionInDays": 1,
       },
       "Type": "AWS::Logs::LogGroup",
-      "UpdateReplacePolicy": "Retain",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "TextLogGroupsPolicyResourcePolicyB4E96605": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "{\\"Statement\\":[{\\"Action\\":[\\"logs:CreateLogStream\\",\\"logs:PutLogEvents\\"],\\"Effect\\":\\"Allow\\",\\"Principal\\":{\\"Service\\":\\"apigateway.amazonaws.com\\"},\\"Resource\\":\\"",
+              Object {
+                "Fn::GetAtt": Array [
+                  "TextLogGroupsEBFB9F42",
+                  "Arn",
+                ],
+              },
+              "\\"}],\\"Version\\":\\"2012-10-17\\"}",
+            ],
+          ],
+        },
+        "PolicyName": "testTextLogGroupsPolicy84A67066",
+      },
+      "Type": "AWS::Logs::ResourcePolicy",
     },
     "TextStateMachine95BF0DB2": Object {
       "DependsOn": Array [

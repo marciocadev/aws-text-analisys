@@ -8,23 +8,31 @@ import {
 } from "aws-cdk-lib/aws-stepfunctions-tasks";
 import { Construct } from "constructs";
 
+export interface TextTableProps {
+  readonly pkField: string;
+}
+
 export class TextTable extends Table {
-  constructor(scope: Construct, id: string) {
+  readonly pkField: string;
+
+  constructor(scope: Construct, id: string, props: TextTableProps) {
     super(scope, id, {
       tableName: id,
       removalPolicy: RemovalPolicy.DESTROY,
       partitionKey: {
-        name: "txt",
+        name: props.pkField,
         type: AttributeType.STRING,
       },
     });
+
+    this.pkField = props.pkField;
   }
 
-  putTextTask(inputField: string) {
+  putTextTask() {
     return new DynamoPutItem(this, "DynamoDBPutText", {
       item: {
         txt: DynamoAttributeValue.fromString(
-          JsonPath.stringAt(`$.${inputField}`)
+          JsonPath.stringAt(`$.${this.pkField}`)
         ),
       },
       table: this,
@@ -32,11 +40,11 @@ export class TextTable extends Table {
     });
   }
 
-  updateLanguageTask(inputField: string) {
+  updateLanguageTask() {
     return new DynamoUpdateItem(this, "DynamoDBUpdateLanguage", {
       key: {
         txt: DynamoAttributeValue.fromString(
-          JsonPath.stringAt(`$.${inputField}`)
+          JsonPath.stringAt(`$.${this.pkField}`)
         ),
       },
       table: this,
@@ -54,14 +62,14 @@ export class TextTable extends Table {
     });
   }
 
-  listLanguages(inputField: string) {
+  listLanguages() {
     return new Map(this, "ListLanguages", {
       inputPath: JsonPath.stringAt("$"),
       itemsPath: JsonPath.stringAt("$.result.Languages"),
       parameters: {
         "item.$": "$$.Map.Item.Value",
-        "txt.$": `$.${inputField}`,
+        "txt.$": `$.${this.pkField}`,
       },
-    }).iterator(this.updateLanguageTask(inputField));
+    }).iterator(this.updateLanguageTask());
   }
 }

@@ -1,26 +1,9 @@
-import { App, Stack, StackProps } from "aws-cdk-lib";
-import {
-  AwsIntegration,
-  IntegrationOptions,
-  JsonSchema,
-  JsonSchemaType,
-  JsonSchemaVersion,
-  LogGroupLogDestination,
-  MethodLoggingLevel,
-  Model,
-  RequestValidator,
-  RestApi,
-} from "aws-cdk-lib/aws-apigateway";
-import {
-  Effect,
-  Policy,
-  PolicyStatement,
-  Role,
-  ServicePrincipal,
-} from "aws-cdk-lib/aws-iam";
+import { App, RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
+import { ServicePrincipal } from "aws-cdk-lib/aws-iam";
 import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Chain, LogLevel, StateMachine } from "aws-cdk-lib/aws-stepfunctions";
 import { Construct } from "constructs";
+import { TextGateway } from "./apigateway/text-gateway";
 import { DetectDominantLanguage } from "./comprehend";
 import { TextTable } from "./dynamodb";
 
@@ -28,19 +11,26 @@ export class MyStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps = {}) {
     super(scope, id, props);
 
+    const txtField: string = "txt";
+
+    const serviceApiGateway = new ServicePrincipal("apigateway.amazonaws.com");
+
     const logGroups = new LogGroup(this, "TextLogGroups", {
       logGroupName: "TextLogs",
       retention: RetentionDays.ONE_DAY,
+      removalPolicy: RemovalPolicy.DESTROY,
     });
+    logGroups.grantWrite(serviceApiGateway);
 
-    const table = new TextTable(this, "TextTable");
-    const inputField: string = "txt";
+    const table = new TextTable(this, "TextTable", { pkField: txtField });
 
-    const chain = Chain.start(table.putTextTask(inputField))
+    const chain = Chain.start(table.putTextTask())
       .next(
-        new DetectDominantLanguage(this, "DetectDominantLanguage", inputField)
+        new DetectDominantLanguage(this, "DetectDominantLanguage", {
+          textField: txtField,
+        })
       )
-      .next(table.listLanguages(inputField));
+      .next(table.listLanguages());
 
     const stateMachine = new StateMachine(this, "TextStateMachine", {
       stateMachineName: "TextAnalisysStateMachine",
@@ -52,84 +42,12 @@ export class MyStack extends Stack {
       },
     });
 
-    const apiGatewayStepFunctionRole = new Role(this, "TextAnalisysRole", {
-      assumedBy: new ServicePrincipal("apigateway.amazonaws.com"),
-    });
-    apiGatewayStepFunctionRole.attachInlinePolicy(
-      new Policy(this, "TextAnalisysPolicy", {
-        statements: [
-          new PolicyStatement({
-            actions: ["states:StartExecution"],
-            effect: Effect.ALLOW,
-            resources: [stateMachine.stateMachineArn],
-          }),
-        ],
-      })
-    );
-
-    const integrationOptions: IntegrationOptions = {
-      credentialsRole: apiGatewayStepFunctionRole,
-      integrationResponses: [
-        {
-          statusCode: "200",
-          responseTemplates: {
-            "application/json": "Texto enviado com sucesso",
-          },
-        },
-      ],
-      requestTemplates: {
-        "application/json": `
-        {
-          "input": "$util.escapeJavaScript($input.body)",
-          "stateMachineArn": "${stateMachine.stateMachineArn}"
-        }`,
-      },
-    };
-
-    const integrationPost = new AwsIntegration({
-      service: "states",
-      action: "StartExecution",
-      integrationHttpMethod: "POST",
-      options: integrationOptions,
-    });
-
-    const apigateway = new RestApi(this, "TextAnalisysRestApi", {
-      restApiName: "TextAnalisys",
-      deployOptions: {
-        accessLogDestination: new LogGroupLogDestination(logGroups),
-        loggingLevel: MethodLoggingLevel.INFO,
-        dataTraceEnabled: true,
-      },
-    });
-
-    const requestSchemaPost: JsonSchema = {
-      title: "PostRequest",
-      type: JsonSchemaType.OBJECT,
-      schema: JsonSchemaVersion.DRAFT4,
-      properties: {
-        txt: { type: JsonSchemaType.STRING },
-      },
-      required: ["txt"],
-    };
-
-    const requestModelPost: Model = new Model(this, "PostModel", {
-      restApi: apigateway,
-      contentType: "application/json",
-      schema: requestSchemaPost,
-    });
-
-    const requestValidator = new RequestValidator(this, "PostValidator", {
-      requestValidatorName: "validator",
-      restApi: apigateway,
-      validateRequestBody: true,
-      validateRequestParameters: false,
-    });
-
-    const resource = apigateway.root.addResource("SendText");
-    resource.addMethod("POST", integrationPost, {
-      methodResponses: [{ statusCode: "200" }],
-      requestModels: { "application/json": requestModelPost },
-      requestValidator: requestValidator,
+    new TextGateway(this, "TextApiGateway", {
+      stateMachineArn: stateMachine.stateMachineArn,
+      stateMachineName: stateMachine.stateMachineName,
+      serviceApiGateway: serviceApiGateway,
+      logGroups: logGroups,
+      postRequest: txtField,
     });
   }
 }
