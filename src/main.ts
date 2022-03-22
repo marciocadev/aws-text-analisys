@@ -1,4 +1,4 @@
-import { App, Stack, StackProps } from "aws-cdk-lib";
+import { App, RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
 import {
   AwsIntegration,
   IntegrationOptions,
@@ -31,7 +31,9 @@ export class MyStack extends Stack {
     const logGroups = new LogGroup(this, "TextLogGroups", {
       logGroupName: "TextLogs",
       retention: RetentionDays.ONE_DAY,
+      removalPolicy: RemovalPolicy.DESTROY,
     });
+    logGroups.grantWrite(new ServicePrincipal("apigateway.amazonaws.com"));
 
     const table = new TextTable(this, "TextTable");
     const inputField: string = "txt";
@@ -67,13 +69,30 @@ export class MyStack extends Stack {
       })
     );
 
+    const responseTemplate: string = `
+      #if ($input.path('$.__type') != "")
+        #set($context.responseOverride.status = 500)
+        {
+          "requestId": "$context.requestId",
+          "message": "$input.path('$.message').trim()"
+        }
+      #else
+        #set($context.responseOverride.status = 200)
+        {
+          "requestId": "$context.requestId",
+          "executionArn": "$input.path('$.executionArn').trim()",
+          "startDate": "$input.path('$.startDate')"
+        }
+      #end
+    `;
+
     const integrationOptions: IntegrationOptions = {
       credentialsRole: apiGatewayStepFunctionRole,
       integrationResponses: [
         {
           statusCode: "200",
           responseTemplates: {
-            "application/json": "Texto enviado com sucesso",
+            "application/json": responseTemplate
           },
         },
       ],
@@ -81,6 +100,7 @@ export class MyStack extends Stack {
         "application/json": `
         {
           "input": "$util.escapeJavaScript($input.body)",
+          "name": "${stateMachine.stateMachineName}-$util.base64Encode($util.escapeJavaScript($input.body)).hashCode()",
           "stateMachineArn": "${stateMachine.stateMachineArn}"
         }`,
       },
@@ -98,7 +118,7 @@ export class MyStack extends Stack {
       deployOptions: {
         accessLogDestination: new LogGroupLogDestination(logGroups),
         loggingLevel: MethodLoggingLevel.INFO,
-        dataTraceEnabled: true,
+        tracingEnabled: true,
       },
     });
 
