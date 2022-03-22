@@ -18,21 +18,20 @@ import {
 } from "aws-cdk-lib/aws-iam";
 import { Chain, StateMachine } from "aws-cdk-lib/aws-stepfunctions";
 import { Construct } from "constructs";
-import { TextTable } from "./dynamodb/text-table";
-import { DetectDominantLanguageLambda } from "./lambda-fns";
+import { DetectDominantLanguage } from "./comprehend";
+import { TextTable } from "./dynamodb";
 
 export class MyStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps = {}) {
     super(scope, id, props);
 
     const table = new TextTable(this, "TextTable");
-    const detectDominantlanguageLambda = new DetectDominantLanguageLambda(
-      this,
-      "ComprehendLambda"
-    );
-    const chain = Chain.start(table.putTextTask())
-      .next(detectDominantlanguageLambda.comprehendTask())
-      .next(table.listLanguages());
+    const inputField: string = "txt";
+
+    const chain = Chain.start(table.putTextTask(inputField))
+      .next(new DetectDominantLanguage(this, "DetectDominantLanguage", inputField))
+      .next(table.listLanguages(inputField));
+
     const stateMachine = new StateMachine(this, "TextStateMachine", {
       stateMachineName: "TextAnalisysStateMachine",
       definition: chain,

@@ -132,98 +132,6 @@ Object {
     },
   },
   "Resources": Object {
-    "ComprehendLambdaB86292DA": Object {
-      "DependsOn": Array [
-        "ComprehendLambdaServiceRoleDefaultPolicyCDE1F4C1",
-        "ComprehendLambdaServiceRole27C75036",
-      ],
-      "Properties": Object {
-        "Code": Object {
-          "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "62582a83ef1f654c1d8301cea9a86fa1b48a9c0d47b9b3ef0330082408838b7a.zip",
-        },
-        "Environment": Object {
-          "Variables": Object {
-            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
-          },
-        },
-        "FunctionName": "ComprehendLambda",
-        "Handler": "index.handler",
-        "Role": Object {
-          "Fn::GetAtt": Array [
-            "ComprehendLambdaServiceRole27C75036",
-            "Arn",
-          ],
-        },
-        "Runtime": "nodejs14.x",
-        "TracingConfig": Object {
-          "Mode": "Active",
-        },
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "ComprehendLambdaServiceRole27C75036": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": Object {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": Array [
-          Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "ComprehendLambdaServiceRoleDefaultPolicyCDE1F4C1": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
-                "xray:PutTraceSegments",
-                "xray:PutTelemetryRecords",
-              ],
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-            Object {
-              "Action": "comprehend:DetectDominantLanguage",
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "ComprehendLambdaServiceRoleDefaultPolicyCDE1F4C1",
-        "Roles": Array [
-          Object {
-            "Ref": "ComprehendLambdaServiceRole27C75036",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
     "PostModelD4C7F5B5": Object {
       "Properties": Object {
         "ContentType": "application/json",
@@ -481,7 +389,7 @@ Object {
           "Fn::Join": Array [
             "",
             Array [
-              "{\\"StartAt\\":\\"DynamoDBPutText\\",\\"States\\":{\\"DynamoDBPutText\\":{\\"Next\\":\\"DetectDominantLanguageInvoke\\",\\"Type\\":\\"Task\\",\\"ResultPath\\":null,\\"Resource\\":\\"arn:",
+              "{\\"StartAt\\":\\"DynamoDBPutText\\",\\"States\\":{\\"DynamoDBPutText\\":{\\"Next\\":\\"DetectDominantLanguage\\",\\"Type\\":\\"Task\\",\\"ResultPath\\":null,\\"Resource\\":\\"arn:",
               Object {
                 "Ref": "AWS::Partition",
               },
@@ -489,18 +397,11 @@ Object {
               Object {
                 "Ref": "TextTableAD0EFD79",
               },
-              "\\"}},\\"DetectDominantLanguageInvoke\\":{\\"Next\\":\\"ListLanguages\\",\\"Retry\\":[{\\"ErrorEquals\\":[\\"Lambda.ServiceException\\",\\"Lambda.AWSLambdaException\\",\\"Lambda.SdkClientException\\"],\\"IntervalSeconds\\":2,\\"MaxAttempts\\":6,\\"BackoffRate\\":2}],\\"Type\\":\\"Task\\",\\"Resource\\":\\"arn:",
+              "\\"}},\\"DetectDominantLanguage\\":{\\"Next\\":\\"ListLanguages\\",\\"Type\\":\\"Task\\",\\"Comment\\":\\"Comprehend Detect Dominant Language\\",\\"Resource\\":\\"arn:",
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":states:::lambda:invoke\\",\\"Parameters\\":{\\"FunctionName\\":\\"",
-              Object {
-                "Fn::GetAtt": Array [
-                  "ComprehendLambdaB86292DA",
-                  "Arn",
-                ],
-              },
-              "\\",\\"Payload.$\\":\\"$\\"}},\\"ListLanguages\\":{\\"Type\\":\\"Map\\",\\"End\\":true,\\"InputPath\\":\\"$.Payload\\",\\"Parameters\\":{\\"item.$\\":\\"$$.Map.Item.Value\\",\\"txt.$\\":\\"$.txt\\"},\\"Iterator\\":{\\"StartAt\\":\\"DynamoDBUpdateLanguage\\",\\"States\\":{\\"DynamoDBUpdateLanguage\\":{\\"End\\":true,\\"Type\\":\\"Task\\",\\"InputPath\\":\\"$\\",\\"ResultPath\\":null,\\"Resource\\":\\"arn:",
+              ":states:::aws-sdk:comprehend:DetectDominantLanguage\\",\\"Parameters\\":{\\"Text.$\\":\\"$.txt\\"}},\\"ListLanguages\\":{\\"Type\\":\\"Map\\",\\"End\\":true,\\"Parameters\\":{\\"item.$\\":\\"$$.Map.Item.Value\\",\\"txt.$\\":\\"$.txt\\"},\\"Iterator\\":{\\"StartAt\\":\\"DynamoDBUpdateLanguage\\",\\"States\\":{\\"DynamoDBUpdateLanguage\\":{\\"End\\":true,\\"Type\\":\\"Task\\",\\"InputPath\\":\\"$\\",\\"ResultPath\\":null,\\"Resource\\":\\"arn:",
               Object {
                 "Ref": "AWS::Partition",
               },
@@ -508,7 +409,7 @@ Object {
               Object {
                 "Ref": "TextTableAD0EFD79",
               },
-              "\\",\\"ExpressionAttributeNames\\":{\\"#Score.$\\":\\"$.item.LanguageCode\\"},\\"ExpressionAttributeValues\\":{\\":score\\":{\\"N.$\\":\\"States.Format('{}', $.item.Score)\\"}},\\"UpdateExpression\\":\\"SET #Score = :score\\"}}}},\\"ItemsPath\\":\\"$.languages\\"}}}",
+              "\\",\\"ExpressionAttributeNames\\":{\\"#Score.$\\":\\"$.item.LanguageCode\\"},\\"ExpressionAttributeValues\\":{\\":score\\":{\\"N.$\\":\\"States.Format('{}', $.item.Score)\\"}},\\"UpdateExpression\\":\\"SET #Score = :score\\"}}}},\\"ItemsPath\\":\\"$.Languages\\"}}}",
             ],
           ],
         },
@@ -592,14 +493,9 @@ Object {
               },
             },
             Object {
-              "Action": "lambda:InvokeFunction",
+              "Action": "comprehend:DetectDominantLanguage",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "ComprehendLambdaB86292DA",
-                  "Arn",
-                ],
-              },
+              "Resource": "*",
             },
             Object {
               "Action": "dynamodb:UpdateItem",
